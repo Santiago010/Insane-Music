@@ -1,10 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useContext, useEffect, useState} from 'react';
-import {Animated, Image, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect} from 'react';
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {ThemeContext} from '../context/themeContext/themeContext';
-import {DeviceDimensions} from '../helpers/DeviceDimensions';
 import {useAnimation} from '../hooks/useAnimation';
 import {Producto} from '../interfaces/interfacesApp';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,21 +21,29 @@ import {
 } from '../theme/GlobalTheme';
 import {CarouselImages} from './CarouselImages';
 import {AuthContext} from '../context/authContext/authContext';
+import {ChatContext} from '../context/chatContext/chatContext';
 
 interface Props {
   product: Producto;
+  typeBtn: 'Ver' | 'Estoy Interesado';
 }
 
-export const Card = ({product}: Props) => {
+export const Card = ({product, typeBtn}: Props) => {
   const {opacity, fadeIn, fadeOut} = useAnimation();
   const {user} = useContext(AuthContext);
   const {
     theme: {colors},
   } = useContext(ThemeContext);
   const navigation = useNavigation();
+  const {createChat} = useContext(ChatContext);
+
+  const createChatForSendMessage = () => {
+    createChat(user?.uid, product?.usuario._id).then(data => {
+      navigation.navigate('StackChat');
+    });
+  };
 
   useEffect(() => {
-    console.log(product);
     fadeIn(800);
     return () => fadeOut();
   }, []);
@@ -50,14 +63,9 @@ export const Card = ({product}: Props) => {
           }}
           activeOpacity={0.5}
           style={{
-            flexDirection: 'row',
             backgroundColor: colors.primary,
-            opacity: 0.8,
-            alignItems: 'center',
-            width: '66%',
-            borderTopEndRadius: 555,
-            borderBottomEndRadius: 333,
             ...shadowGlobal,
+            ...styles.btnGoProfile,
           }}>
           {product.usuario.img ? (
             <Image
@@ -83,9 +91,8 @@ export const Card = ({product}: Props) => {
           {user?.nombre === product.usuario.nombre ? (
             <Text
               style={{
-                fontSize: 22,
+                ...styles.textBtnGoProfile,
                 color: colors.text,
-                alignSelf: 'flex-end',
                 ...marginGlobalVertical,
               }}>
               ✌Yo✌
@@ -93,60 +100,132 @@ export const Card = ({product}: Props) => {
           ) : (
             <Text
               style={{
-                fontSize: 22,
+                ...styles.textBtnGoProfile,
                 color: colors.text,
-                alignSelf: 'flex-end',
                 ...marginGlobalVertical,
               }}>
               {product.usuario.nombre}
             </Text>
           )}
 
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'flex-end',
-            }}>
-            <Icon name="leaf" size={18} />
+          <View style={styles.containerIconBtnGoProfile}>
+            <Icon name="chevron-forward" size={30} />
           </View>
         </TouchableOpacity>
-        <CarouselImages
-          images={[
-            product.img,
-            'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHw%3D&w=1000&q=80',
-          ]}
-        />
+
+        <CarouselImages images={product.imgs} />
         <View style={{...marginGlobalHorizontal}}>
-          <Text style={{color: colors.text, fontWeight: 'bold', fontSize: 22}}>
+          <Text style={{color: colors.text, ...styles.titleProduct}}>
             {product.nombre}
           </Text>
-          <Text style={{color: colors.text, fontSize: 18}}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book
+          <Text style={{color: colors.text, ...styles.description}}>
+            {product.descripcion}
           </Text>
-          <TouchableOpacity
-            activeOpacity={0.8}
+          <View
             style={{
-              backgroundColor: colors.primary,
-              ...shadowGlobal,
-              ...borderRadiusGlobal,
-              alignSelf: 'center',
+              ...styles.containerInfoProduct,
               ...marginGlobalVertical,
-              paddingHorizontal: 22,
-              paddingVertical: 10,
-            }}
-            onPress={() =>
-              navigation.navigate('Details', {
-                name: product.nombre,
-                _id: product._id,
-              })
-            }>
-            <Text style={{color: colors.text, fontSize: 18}}>Ver</Text>
-          </TouchableOpacity>
+            }}>
+            <Text
+              style={{
+                color: colors.text,
+                ...styles.textCategorie,
+              }}>
+              Categoria: {product.categoria.nombre}
+              {`\nGenero: ${product.genero.nombre}`}
+            </Text>
+            {product.cambio ? (
+              <Text
+                style={{
+                  color: colors.text,
+                  ...styles.textCategorie,
+                }}>
+                Intercambio
+              </Text>
+            ) : (
+              <Text>${product.precio}</Text>
+            )}
+          </View>
+          {typeBtn === 'Ver' ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={{
+                backgroundColor: colors.primary,
+                ...shadowGlobal,
+                ...borderRadiusGlobal,
+                ...marginGlobalVertical,
+                ...styles.btnAction,
+              }}
+              onPress={() =>
+                navigation.navigate('Details', {
+                  name: product.nombre,
+                  _id: product._id,
+                })
+              }>
+              <Text style={{color: colors.text, ...styles.textBtnActions}}>
+                {typeBtn}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={{
+                backgroundColor: colors.primary,
+                ...shadowGlobal,
+                ...borderRadiusGlobal,
+                ...marginGlobalVertical,
+                ...styles.btnAction,
+              }}
+              onPress={() => createChatForSendMessage()}>
+              <Text style={{color: colors.text, ...styles.textBtnActions}}>
+                {typeBtn}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </LinearGradient>
     </Animated.View>
   );
 };
+const styles = StyleSheet.create({
+  btnGoProfile: {
+    flexDirection: 'row',
+    opacity: 0.8,
+    alignItems: 'center',
+    width: '66%',
+    borderTopEndRadius: 555,
+    borderBottomEndRadius: 333,
+  },
+  textBtnGoProfile: {
+    alignSelf: 'flex-end',
+    fontSize: 22,
+  },
+  containerIconBtnGoProfile: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  titleProduct: {
+    fontWeight: 'bold',
+    fontSize: 22,
+  },
+  description: {
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  containerInfoProduct: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  textCategorie: {
+    fontSize: 18,
+    textDecorationLine: 'underline',
+  },
+  btnAction: {
+    alignSelf: 'center',
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+  },
+  textBtnActions: {
+    fontSize: 18,
+  },
+});

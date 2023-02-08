@@ -44,7 +44,7 @@ export const Home = () => {
             }}
           />
         )}
-        renderItem={({item}) => <Card product={item} />}
+        renderItem={({item}) => <Card product={item} typeBtn={'Ver'} />}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

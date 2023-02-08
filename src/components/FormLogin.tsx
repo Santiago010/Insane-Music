@@ -60,7 +60,7 @@ export const FormLogin = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{flex: 1, ...marginGlobalHorizontal}}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={{flex: 1, justifyContent: 'center'}}>
+        <View style={styles.container}>
           <Logo />
           <Text style={{...styles.title, color: colors.text}}>Login</Text>
           <Text style={{...styles.labels, color: colors.text}}>Correo</Text>
@@ -100,12 +100,14 @@ export const FormLogin = () => {
               style={{...btnSendGlobal, backgroundColor: colors.primary}}
               activeOpacity={0.7}
               onPress={() => sendData()}>
-              <Text style={{color: colors.text, fontSize: 18}}>Ingresar</Text>
+              <Text style={{color: colors.text, ...styles.textBtns}}>
+                Ingresar
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => navigation.navigate('Register')}>
-              <Text style={{color: colors.text, fontSize: 18}}>
+              <Text style={{color: colors.text, ...styles.textBtns}}>
                 Crear Cuenta
               </Text>
             </TouchableOpacity>
@@ -116,6 +118,7 @@ export const FormLogin = () => {
   );
 };
 const styles = StyleSheet.create({
+  container: {flex: 1, justifyContent: 'center'},
   title: {
     fontSize: 40,
     fontWeight: 'bold',
@@ -136,5 +139,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+  },
+  textBtns: {
+    fontSize: 18,
   },
 });

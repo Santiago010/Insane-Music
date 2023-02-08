@@ -6,7 +6,6 @@ import {Home} from '../screens/Home';
 export type RootStackParamsStackProducts = {
   Home: undefined;
   Details: {
-    name: string;
     _id: string;
   };
 };
