@@ -5,9 +5,10 @@ import {ThemeContext} from '../context/themeContext/themeContext';
 import {DeviceDimensions} from '../helpers/DeviceDimensions';
 import {borderRadiusGlobal} from '../theme/GlobalTheme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {ImagePickerResponse} from 'react-native-image-picker';
 
 interface Props {
-  images: string[];
+  images: ImagePickerResponse[];
   loadImage: (positionImg: number) => void;
 }
 
@@ -35,7 +36,7 @@ export const CarouselImage2 = ({images, loadImage}: Props) => {
       renderItem={({item}) => (
         <View>
           <Image
-            source={{uri: item}}
+            source={{uri: item.assets[0].uri}}
             style={{
               width: '100%',
               height: '100%',

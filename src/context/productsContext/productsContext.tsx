@@ -1,3 +1,4 @@
+import {AxiosResponse} from 'axios';
 import React, {createContext, useEffect, useRef, useState} from 'react';
 import {ImagePickerResponse} from 'react-native-image-picker';
 import {DB} from '../../db/db';
@@ -5,6 +6,7 @@ import {
   Producto,
   ResPublishProduct,
   ResProductos,
+  ResProductsForGender,
 } from '../../interfaces/interfacesApp';
 
 interface ProductsContextProps {
@@ -12,8 +14,11 @@ interface ProductsContextProps {
   loadProducts: () => Promise<void>;
   addProduct: (
     categoria: string,
+    descripcion: string,
+    genero: string,
     nombre: string,
     precio: string,
+    cambio: Boolean,
   ) => Promise<ResPublishProduct | undefined>;
   updateProduct: (
     categoryId: string,
@@ -23,9 +28,12 @@ interface ProductsContextProps {
   deleteProduct: (productId: string) => Promise<void>;
   loadProductById: (productId: string) => Promise<Producto | undefined>;
   uploadImage: (
-    dataImage1: ImagePickerResponse,
+    images: ImagePickerResponse[],
     id: string | undefined,
-  ) => Promise<void>; // TODO:cambiar any
+  ) => Promise<AxiosResponse<any, any> | undefined>;
+  loadProductForGender: (
+    gender: string,
+  ) => Promise<ResProductsForGender[] | undefined>;
 }
 
 export const ProductsContext = createContext({} as ProductsContextProps);
@@ -52,14 +60,20 @@ export const ProductsProvider = ({
 
   const addProduct = async (
     categoria: string,
+    descripcion: string,
+    genero: string,
     nombre: string,
     precio: string,
+    cambio: Boolean,
   ) => {
     try {
       const {data} = await DB.post<ResPublishProduct>('/productos', {
         categoria,
         nombre,
         precio,
+        descripcion,
+        cambio,
+        genero,
       });
       return data;
     } catch (error) {
@@ -84,22 +98,19 @@ export const ProductsProvider = ({
     }
   };
 
-  // TODO: cambiar ANY
   const uploadImage = async (
-    {assets}: ImagePickerResponse,
+    images: ImagePickerResponse[],
     id: string | undefined,
   ) => {
-    const fileToUpload = {
-      uri: assets[0].uri,
-      type: assets[0].type,
-      name: assets[0].fileName,
-    };
-
     const formData = new FormData();
-
-    formData.append('archivo', fileToUpload);
-    console.log(formData);
-
+    console.log({images, id});
+    images.forEach((img, index) => {
+      formData.append(`archivo${index + 1}`, {
+        uri: img.assets[0].uri,
+        type: img.assets[0].type,
+        name: img.assets[0].fileName,
+      });
+    });
     try {
       const res = await DB.put(`/uploads/productos/${id}`, formData, {
         headers: {
@@ -107,6 +118,18 @@ export const ProductsProvider = ({
         },
       });
       return res;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadProductForGender = async (gender: string) => {
+    console.log(gender);
+    try {
+      const {data} = await DB.get<ResProductsForGender[]>(
+        `/productos/genero/${gender}`,
+      );
+      return data;
     } catch (error) {
       console.error(error);
     }
@@ -126,6 +149,7 @@ export const ProductsProvider = ({
         deleteProduct,
         loadProductById,
         uploadImage,
+        loadProductForGender,
       }}>
       {children}
     </ProductsContext.Provider>

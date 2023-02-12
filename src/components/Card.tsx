@@ -143,7 +143,13 @@ export const Card = ({product, typeBtn}: Props) => {
                 Intercambio
               </Text>
             ) : (
-              <Text>${product.precio}</Text>
+              <Text
+                style={{
+                  color: colors.text,
+                  ...styles.textCategorie,
+                }}>
+                ${product.precio}
+              </Text>
             )}
           </View>
           {typeBtn === 'Ver' ? (

@@ -10,9 +10,18 @@ export const useForm = <T extends Object>(initState: T) => {
     });
   };
 
+  const clear = () => {
+    let formTemp = {};
+    for (const key in state) {
+      formTemp[key] = '';
+    }
+    setState(formTemp);
+  };
+
   return {
     ...state,
     form: state,
     onChange,
+    clear,
   };
 };

@@ -26,3 +26,14 @@ export const btnSendGlobal = {
   ...borderRadiusGlobal,
   ...shadowGlobal,
 };
+
+export const bottonTabNavigatorStyleGlobal = {
+  position: 'absolute',
+  bottom: 25,
+  left: 20,
+  right: 20,
+  ...borderRadiusGlobal,
+  ...shadowGlobal,
+  borderTopWidth: 0,
+  opacity: 0.9,
+};

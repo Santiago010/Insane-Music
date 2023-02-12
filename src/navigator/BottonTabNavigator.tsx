@@ -2,7 +2,11 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {AddProduct} from '../screens/AddProduct';
 import {Profile} from '../screens/Profile';
-import {borderRadiusGlobal, shadowGlobal} from '../theme/GlobalTheme';
+import {
+  borderRadiusGlobal,
+  bottonTabNavigatorStyleGlobal,
+  shadowGlobal,
+} from '../theme/GlobalTheme';
 import {DeviceDimensions} from '../helpers/DeviceDimensions';
 import {Text, View} from 'react-native';
 import {useContext} from 'react';
@@ -27,15 +31,8 @@ export const BottonTabNavigator = () => {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 25,
-          left: 20,
-          right: 20,
-          ...borderRadiusGlobal,
-          ...shadowGlobal,
-          borderTopWidth: 0,
+          ...bottonTabNavigatorStyleGlobal,
           height: heightWindow * 0.1,
-          opacity: 0.9,
         },
       }}>
       <Tab.Screen
