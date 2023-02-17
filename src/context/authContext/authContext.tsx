@@ -44,20 +44,27 @@ export const AuthProvider = ({
         type: 'notAuthenticated',
       });
     } else {
-      const res = await DB.get<ResLogin>('/auth');
-      if (res.status !== 200) {
-        return dispatch({
+      try {
+        const res = await DB.get<ResLogin>('/auth');
+        if (res.status !== 200) {
+          return dispatch({
+            type: 'notAuthenticated',
+          });
+        } else {
+          await AsyncStorage.setItem('token', res.data.token);
+          dispatch({
+            type: 'signUp',
+            payload: {
+              token: res.data.token,
+              user: res.data.usuario,
+            },
+          });
+        }
+      } catch (error) {
+        dispatch({
           type: 'notAuthenticated',
         });
-      } else {
-        await AsyncStorage.setItem('token', res.data.token);
-        dispatch({
-          type: 'signUp',
-          payload: {
-            token: res.data.token,
-            user: res.data.usuario,
-          },
-        });
+        console.error(error.response.data);
       }
     }
   };

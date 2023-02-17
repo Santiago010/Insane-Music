@@ -6,6 +6,7 @@ import {InfoCategoria, Genero} from '../interfaces/interfacesApp';
 import {
   borderRadiusGlobal,
   btnSendGlobal,
+  marginGlobalHorizontal,
   marginGlobalVertical,
 } from '../theme/GlobalTheme';
 import {PacmanIndicator} from 'react-native-indicators';
@@ -103,11 +104,39 @@ export const ModalFilter = ({
           </View>
         </View>
         <View style={styles.containerBtns}>
-          <TouchableOpacity onPress={() => filtrar()}>
-            <Text style={{}}>Filtrar</Text>
+          <TouchableOpacity
+            style={{...marginGlobalHorizontal}}
+            onPress={() => filtrar()}>
+            <Text
+              style={{
+                color: colors.background,
+                backgroundColor: colors.text,
+                paddingHorizontal: 8,
+                paddingVertical: 5,
+                fontSize: 22,
+                borderRadius: 11,
+                textTransform: 'uppercase',
+              }}>
+              Filtrar
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => hideModal()}>
-            <Text>Cancelar</Text>
+          <TouchableOpacity
+            style={{
+              ...marginGlobalHorizontal,
+            }}
+            onPress={() => hideModal()}>
+            <Text
+              style={{
+                color: colors.text,
+                backgroundColor: colors.background,
+                paddingHorizontal: 8,
+                paddingVertical: 5,
+                fontSize: 22,
+                borderRadius: 6,
+                textTransform: 'uppercase',
+              }}>
+              Cancelar
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

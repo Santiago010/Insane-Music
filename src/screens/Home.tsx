@@ -1,5 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+  Animated,
+} from 'react-native';
 import {Card} from '../components/Card';
 import {ProductsContext} from '../context/productsContext/productsContext';
 import {DeviceDimensions} from '../helpers/DeviceDimensions';

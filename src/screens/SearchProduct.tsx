@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Image,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -23,6 +23,8 @@ import {ProductsContext} from '../context/productsContext/productsContext';
 import {ResProductsForGender} from '../interfaces/interfacesApp';
 import {FlatList} from 'react-native-gesture-handler';
 import {DeviceDimensions} from '../helpers/DeviceDimensions';
+import {Card2} from '../components/Card2';
+import {useDebounce} from '../hooks/useDebounce';
 
 const SearchProduct = () => {
   const {nombre, genero, categoria, onChange, form} = useForm({
@@ -36,13 +38,14 @@ const SearchProduct = () => {
   } = useContext(ThemeContext);
   const {widthWindow, heightWindow} = DeviceDimensions();
 
-  const {loadProductForGender} = useContext(ProductsContext);
+  const {loadProductForGenderT} = useContext(ProductsContext);
   const [isVisible, setIsVisible] = useState(false);
-  const [productos, setProductos] = useState<
-    ResProductsForGender[] | undefined
-  >();
+  const [productos, setProductos] = useState<unknown>();
   const {categories} = useCategories();
   const {generos, getGeneros} = useGeneros();
+  const debounce = useDebounce({input: nombre, time: 500});
+  const [term, setTerm] = useState('');
+  const [productsFiltered, setProductFiltered] = useState<unknown>([]);
 
   const setCategoria = (value: string) => {
     onChange(value, 'categoria');
@@ -54,9 +57,48 @@ const SearchProduct = () => {
 
   const filtrar = () => {
     console.log(form);
-    loadProductForGender(genero).then(data => setProductos(data));
+    loadProductForGenderT(genero)
+      .then(data => {
+        setProductos(data);
+      })
+      .catch(err => {
+        console.error(err);
+        Alert.alert(
+          '¡Atención!',
+          `Hubo un error de internet`,
+          [
+            {
+              onPress: () => {},
+            },
+          ],
+          {
+            cancelable: true,
+          },
+        );
+      });
+    setProductFiltered([]);
     setIsVisible(false);
   };
+
+  useEffect(() => {
+    if (productos?.length > 0) {
+      setProductFiltered(productos);
+    }
+  }, [productos]);
+
+  useEffect(() => {
+    if (term.length === 0) {
+      setProductFiltered([]);
+    }
+
+    setProductFiltered(
+      productos?.filter(product => product.nombre.toLowerCase().includes(term)),
+    );
+  }, [term]);
+
+  useEffect(() => {
+    setTerm(debounce);
+  }, [debounce]);
 
   useEffect(() => {
     if (categories) {
@@ -80,35 +122,48 @@ const SearchProduct = () => {
     <View>
       <FlatList
         ListHeaderComponent={
-          <View
-            style={{
-              ...styles.containerSearch,
-              marginTop: top,
-              backgroundColor: colors.card,
-              ...borderRadiusGlobal,
-              ...shadowGlobal,
-            }}>
-            <TextInput
+          <View>
+            <View
               style={{
-                ...styles.inputs,
-                color: colors.text,
-              }}
-              placeholder={'Ingrese el nombre de la publicación'}
-              placeholderTextColor={colors.text}
-              value={nombre}
-              onChangeText={value => onChange(value, 'nombre')}
-            />
-            <Icon name="search" color={colors.primary} size={22} />
-            <TouchableOpacity
-              onPress={() => setIsVisible(true)}
-              activeOpacity={0.5}
-              style={{
-                backgroundColor: colors.primary,
-                padding: 10,
+                ...styles.containerSearch,
+                marginTop: top,
+                backgroundColor: colors.card,
                 ...borderRadiusGlobal,
+                ...shadowGlobal,
               }}>
-              <Icon name="filter" color={colors.text} size={22} />
-            </TouchableOpacity>
+              <TextInput
+                style={{
+                  ...styles.inputs,
+                  color: colors.text,
+                }}
+                placeholder={'Ingrese el nombre de la publicación'}
+                placeholderTextColor={colors.text}
+                value={nombre}
+                onChangeText={value => onChange(value, 'nombre')}
+              />
+              <Icon name="search" color={colors.primary} size={22} />
+              <TouchableOpacity
+                onPress={() => setIsVisible(true)}
+                activeOpacity={0.5}
+                style={{
+                  backgroundColor: colors.primary,
+                  padding: 10,
+                  ...borderRadiusGlobal,
+                }}>
+                <Icon name="filter" color={colors.text} size={22} />
+              </TouchableOpacity>
+            </View>
+            {productos?.length === 0 && (
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 22,
+                  textAlign: 'center',
+                  ...marginGlobalVertical,
+                }}>
+                🤕¡Sin Resultados!
+              </Text>
+            )}
           </View>
         }
         ListFooterComponent={
@@ -119,7 +174,7 @@ const SearchProduct = () => {
             }}
           />
         }
-        data={productos}
+        data={productsFiltered}
         keyExtractor={({_id}) => _id}
         numColumns={2}
         ItemSeparatorComponent={() => (
@@ -130,20 +185,7 @@ const SearchProduct = () => {
             }}
           />
         )}
-        renderItem={({item}) => (
-          <View>
-            <Image
-              source={{uri: item.imgs[0]}}
-              style={{
-                width: widthWindow * 0.4,
-                height: heightWindow * 0.4,
-                ...borderRadiusGlobal,
-              }}
-            />
-            <Text>{item.nombre}</Text>
-          </View>
-        )}
-        onEndReachedThreshold={0.5}
+        renderItem={({item}) => <Card2 item={item} />}
       />
       <ModalFilter
         visible={isVisible}

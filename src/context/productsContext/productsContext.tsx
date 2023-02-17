@@ -1,4 +1,3 @@
-import {AxiosResponse} from 'axios';
 import React, {createContext, useEffect, useRef, useState} from 'react';
 import {ImagePickerResponse} from 'react-native-image-picker';
 import {DB} from '../../db/db';
@@ -12,14 +11,6 @@ import {
 interface ProductsContextProps {
   products: Producto[];
   loadProducts: () => Promise<void>;
-  addProduct: (
-    categoria: string,
-    descripcion: string,
-    genero: string,
-    nombre: string,
-    precio: string,
-    cambio: Boolean,
-  ) => Promise<ResPublishProduct | undefined>;
   updateProduct: (
     categoryId: string,
     productName: string,
@@ -27,13 +18,22 @@ interface ProductsContextProps {
   ) => Promise<void>;
   deleteProduct: (productId: string) => Promise<void>;
   loadProductById: (productId: string) => Promise<Producto | undefined>;
-  uploadImage: (
-    images: ImagePickerResponse[],
-    id: string | undefined,
-  ) => Promise<AxiosResponse<any, any> | undefined>;
   loadProductForGender: (
     gender: string,
   ) => Promise<ResProductsForGender[] | undefined>;
+  loadProductForGenderT: (gender: string) => Promise<unknown>;
+  addProductT: (
+    categoria: string,
+    descripcion: string,
+    genero: string,
+    nombre: string,
+    precio: string,
+    cambio: Boolean,
+  ) => Promise<unknown>;
+  uploadImagesT: (
+    images: ImagePickerResponse[],
+    id: string,
+  ) => Promise<unknown>;
 }
 
 export const ProductsContext = createContext({} as ProductsContextProps);
@@ -58,29 +58,6 @@ export const ProductsProvider = ({
     }
   };
 
-  const addProduct = async (
-    categoria: string,
-    descripcion: string,
-    genero: string,
-    nombre: string,
-    precio: string,
-    cambio: Boolean,
-  ) => {
-    try {
-      const {data} = await DB.post<ResPublishProduct>('/productos', {
-        categoria,
-        nombre,
-        precio,
-        descripcion,
-        cambio,
-        genero,
-      });
-      return data;
-    } catch (error) {
-      console.error(error.response.data);
-    }
-  };
-
   const updateProduct = async (
     categoryId: string,
     productName: string,
@@ -98,12 +75,33 @@ export const ProductsProvider = ({
     }
   };
 
-  const uploadImage = async (
-    images: ImagePickerResponse[],
-    id: string | undefined,
+  const addProductT = (
+    categoria: string,
+    descripcion: string,
+    genero: string,
+    nombre: string,
+    precio: string,
+    cambio: Boolean,
   ) => {
+    return new Promise(async (res, rej) => {
+      try {
+        const {data} = await DB.post<ResPublishProduct>('/productos', {
+          categoria,
+          nombre,
+          precio,
+          descripcion,
+          cambio,
+          genero,
+        });
+        res(data);
+      } catch (error) {
+        rej(error);
+      }
+    });
+  };
+
+  const uploadImagesT = (images: ImagePickerResponse[], id: string) => {
     const formData = new FormData();
-    console.log({images, id});
     images.forEach((img, index) => {
       formData.append(`archivo${index + 1}`, {
         uri: img.assets[0].uri,
@@ -111,16 +109,18 @@ export const ProductsProvider = ({
         name: img.assets[0].fileName,
       });
     });
-    try {
-      const res = await DB.put(`/uploads/productos/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return res;
-    } catch (error) {
-      console.error(error);
-    }
+    return new Promise(async (res, rej) => {
+      try {
+        const resImages = await DB.put(`/uploads/productos/${id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        res(resImages);
+      } catch (error) {
+        rej(error);
+      }
+    });
   };
 
   const loadProductForGender = async (gender: string) => {
@@ -135,6 +135,19 @@ export const ProductsProvider = ({
     }
   };
 
+  const loadProductForGenderT = (gender: string) => {
+    return new Promise(async (res, rej) => {
+      try {
+        const {data} = await DB.get<ResProductsForGender[]>(
+          `/productos/genero/${gender}`,
+        );
+        res(data);
+      } catch (error) {
+        rej(error);
+      }
+    });
+  };
+
   useEffect(() => {
     loadProducts();
   }, []);
@@ -144,12 +157,13 @@ export const ProductsProvider = ({
       value={{
         products,
         loadProducts,
-        addProduct,
         updateProduct,
         deleteProduct,
         loadProductById,
-        uploadImage,
+        loadProductForGenderT,
         loadProductForGender,
+        addProductT,
+        uploadImagesT,
       }}>
       {children}
     </ProductsContext.Provider>

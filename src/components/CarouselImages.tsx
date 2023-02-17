@@ -3,7 +3,7 @@ import {Image, Text, View} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import {ThemeContext} from '../context/themeContext/themeContext';
 import {DeviceDimensions} from '../helpers/DeviceDimensions';
-import {borderRadiusGlobal} from '../theme/GlobalTheme';
+import {borderRadiusGlobal, shadowGlobal} from '../theme/GlobalTheme';
 
 interface Props {
   images: string[];
@@ -17,27 +17,31 @@ export const CarouselImages = ({images}: Props) => {
   } = useContext(ThemeContext);
   return (
     <Carousel
-      width={widthWindow}
-      height={heightWindow * 0.3}
+      style={{
+        alignSelf: 'center',
+      }}
+      width={widthWindow * 0.8}
+      height={heightWindow * 0.5}
       data={images}
       mode={'parallax'}
       modeConfig={{
-        parallaxAdjacentItemScale: 0.6,
-        parallaxScrollingOffset: 100,
-        parallaxScrollingScale: 0.9,
+        parallaxAdjacentItemScale: 0.9,
+        parallaxScrollingOffset: 333,
+        parallaxScrollingScale: 1,
       }}
-      scrollAnimationDuration={1000}
+      scrollAnimationDuration={1111}
       onSnapToItem={index => {
         setNumItem(index + 1);
       }}
       renderItem={({item}) => (
-        <View>
+        <View style={{marginLeft: widthWindow * 0.1}}>
           <Image
             source={{uri: item}}
             style={{
               width: '100%',
               height: '100%',
-              ...borderRadiusGlobal,
+              borderTopRightRadius: 5,
+              borderBottomRightRadius: 5,
             }}
           />
           <Text
@@ -45,7 +49,7 @@ export const CarouselImages = ({images}: Props) => {
               position: 'absolute',
               color: colors.text,
               top: 20,
-              left: 20,
+              right: 11,
               backgroundColor: colors.background,
               padding: 2,
               ...borderRadiusGlobal,

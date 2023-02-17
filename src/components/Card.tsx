@@ -44,7 +44,7 @@ export const Card = ({product, typeBtn}: Props) => {
   };
 
   useEffect(() => {
-    fadeIn(800);
+    fadeIn(1111);
     return () => fadeOut();
   }, []);
 
@@ -66,6 +66,7 @@ export const Card = ({product, typeBtn}: Props) => {
             backgroundColor: colors.primary,
             ...shadowGlobal,
             ...styles.btnGoProfile,
+            marginBottom: 22,
           }}>
           {product.usuario.img ? (
             <Image

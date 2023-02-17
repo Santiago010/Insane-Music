@@ -1,13 +1,9 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
-import {Animated, Image, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, ScrollView} from 'react-native';
 import {Card} from '../components/Card';
-import {CarouselImages} from '../components/CarouselImages';
 import {HeaderBar} from '../components/HeaderBar';
-import {AuthContext} from '../context/authContext/authContext';
-import {ChatContext} from '../context/chatContext/chatContext';
 import {ProductsContext} from '../context/productsContext/productsContext';
-import {ThemeContext} from '../context/themeContext/themeContext';
 import {useAnimation} from '../hooks/useAnimation';
 import {Producto} from '../interfaces/interfacesApp';
 import {RootStackParamsStackProducts} from '../navigator/StackProducts';
@@ -37,9 +33,16 @@ export const DetailsProduct = ({route}: Props) => {
   }
 
   return (
-    <Animated.View style={{transform: [{translateY: position}], flex: 1}}>
-      <HeaderBar></HeaderBar>
-      <Card product={product} typeBtn={'Estoy Interesado'} />
-    </Animated.View>
+    <ScrollView style={{flex: 1}}>
+      <Animated.View
+        style={{
+          transform: [{translateY: position}],
+          flex: 1,
+          marginBottom: 222,
+        }}>
+        <HeaderBar></HeaderBar>
+        <Card product={product} typeBtn={'Estoy Interesado'} />
+      </Animated.View>
+    </ScrollView>
   );
 };

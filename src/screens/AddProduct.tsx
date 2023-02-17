@@ -60,7 +60,7 @@ export const AddProduct = () => {
   const {
     theme: {colors},
   } = useContext(ThemeContext);
-  const {addProduct, uploadImage} = useContext(ProductsContext);
+  const {addProductT, uploadImagesT} = useContext(ProductsContext);
   const {user} = useContext(AuthContext);
   const {top} = useSafeAreaInsets();
 
@@ -74,38 +74,101 @@ export const AddProduct = () => {
     setIsChange(false);
   };
 
-  const publishProduct = () => {
+  const uploadImagesOfNewProduct = async (id: string) => {
+    uploadImagesT(images, id)
+      .then(res => {
+        setLoading(false);
+        clearSpace();
+        Alert.alert(
+          `${nombre} publicado`,
+          '✌ Gracias por aportar un granito para atender la inevitable perplejidad de la realidad ✌',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('StackProducts'),
+            },
+          ],
+        );
+      })
+      .catch(err => {
+        setLoading(false);
+        console.error(err);
+        Alert.alert(
+          '¡Ups Hubo un Error!',
+          `Hubo un error al momento de subir las imagenes`,
+          [
+            {
+              onPress: () => {},
+            },
+          ],
+          {
+            cancelable: true,
+          },
+        );
+      });
+  };
+
+  const publishProduct = async () => {
+    if (nombre.length < 3) {
+      Alert.alert('¡Atencion!', 'debes ingresar un nombre valido', [
+        {
+          onPress: () => {},
+        },
+      ]);
+      return;
+    }
+    if (descripcion.length < 20) {
+      Alert.alert(
+        '¡Atencion!',
+        'debes ingresar una descripción mayor a 20 caracteres',
+        [
+          {
+            onPress: () => {},
+          },
+        ],
+      );
+      return;
+    }
     if (
       images[0].assets[0].uri?.includes('cloudinary') ||
       images[1].assets[0].uri?.includes('cloudinary')
     ) {
-      Alert.alert('¡Atención', 'Te falta alguna foto por subir', [
-        {
-          text: 'OK',
-          onPress: () => {},
-        },
-      ]);
-    } else {
-      setLoading(true);
-      addProduct(categoria, descripcion, genero, nombre, precio, isChange).then(
-        data => {
-          uploadImage(images, data?._id).then(re => {
-            setLoading(false);
-            clearSpace();
-            Alert.alert(
-              `${data?.nombre} publicado`,
-              '✌ Gracias por aportar un granito para atender la inevitable perplejidad de la realidad ✌',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => navigation.navigate('StackProducts'),
-                },
-              ],
-            );
-          });
-        },
+      Alert.alert(
+        '¡Atención!',
+        'Te falta alguna foto por subir',
+        [
+          {
+            text: 'OK',
+            onPress: () => {},
+          },
+        ],
+        {cancelable: true},
       );
+      return;
     }
+
+    setLoading(true);
+    addProductT(categoria, descripcion, genero, nombre, precio, isChange)
+      .then(data => {
+        console.log(data);
+        uploadImagesOfNewProduct(data._id);
+      })
+      .catch(err => {
+        setLoading(false);
+        console.error(err);
+        Alert.alert(
+          '¡Ups Hubo un Error!',
+          `Hubo un error al momento de publicar ${nombre}, intentalo mas tarde`,
+          [
+            {
+              onPress: () => {},
+            },
+          ],
+          {
+            cancelable: true,
+          },
+        );
+      });
   };
 
   const loadImagesFromCamera = (positionImg: number) => {
@@ -132,6 +195,18 @@ export const AddProduct = () => {
       },
       resp => {
         if (resp.didCancel) return;
+        if (resp.errorCode) {
+          Alert.alert(
+            '¡Atención!',
+            'Hubo un prolema al subir esta imagen, escoge otra imagen',
+            [
+              {
+                onPress: () => {},
+              },
+            ],
+          );
+          return;
+        }
         arraytemp[positionImg] = resp;
         setImages(arraytemp);
       },
@@ -220,16 +295,27 @@ export const AddProduct = () => {
             ...shadowGlobal,
             ...styles.containerInfoProfile,
           }}>
-          <Image
-            source={{uri: user?.img}}
-            style={{
-              width: 50,
-              ...borderRadiusGlobal,
-              height: 50,
-              ...marginGlobalHorizontal,
-              ...marginGlobalVertical,
-            }}
-          />
+          {user?.img ? (
+            <Image
+              source={{uri: user.img}}
+              style={{
+                width: 50,
+                ...borderRadiusGlobal,
+                height: 50,
+                ...marginGlobalHorizontal,
+                ...marginGlobalVertical,
+              }}
+            />
+          ) : (
+            <Icon
+              name="person-circle"
+              style={{
+                ...marginGlobalHorizontal,
+                ...marginGlobalVertical,
+              }}
+              size={44}
+            />
+          )}
           <Text
             style={{
               ...styles.textNameProfile,
@@ -251,7 +337,6 @@ export const AddProduct = () => {
             }}
             placeholder={`Ingrese el titulo de  la publicación`}
             placeholderTextColor={colors.text}
-            autoCapitalize={'words'}
             value={nombre}
             onChangeText={value => onChange(value, 'nombre')}
           />
@@ -353,12 +438,14 @@ export const AddProduct = () => {
             }}
             activeOpacity={0.7}
             onPress={() => publishProduct()}>
-            <Icon name="bonfire" size={22} />
-            <Text style={{color: colors.text, fontSize: 18}}>
-              Subir Publicación
-            </Text>
+            {loading ? (
+              <PacmanIndicator color={colors.text} size={22} />
+            ) : (
+              <Text style={{color: colors.text, fontSize: 18}}>
+                Subir Publicación
+              </Text>
+            )}
           </TouchableOpacity>
-          {loading && <PacmanIndicator color={colors.primary} size={44} />}
         </KeyboardAvoidingView>
       </LinearGradient>
     </ScrollView>
