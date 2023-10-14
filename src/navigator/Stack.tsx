@@ -10,6 +10,7 @@ import {BottonTabNavigator} from './BottonTabNavigator';
 
 const AppStack = createStackNavigator();
 
+
 export const Stack = () => {
   const {theme} = useContext(ThemeContext);
   const {status} = useContext(AuthContext);

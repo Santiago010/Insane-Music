@@ -53,6 +53,7 @@ export const ProductsProvider = ({
       );
       desdeRef.current += 5;
       setProducts([...products, ...data.productos]);
+      console.log(products.length);
     } catch (error) {
       console.error(error);
     }

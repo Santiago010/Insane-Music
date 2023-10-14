@@ -37,7 +37,7 @@ export const AuthProvider = ({
   const [state, dispatch] = useReducer(authReducer, authInicialState);
 
   const checkToken = async () => {
-    let token = await AsyncStorage.getItem('token');
+    const token = await AsyncStorage.getItem('token');
 
     if (!token) {
       return dispatch({
@@ -99,6 +99,7 @@ export const AuthProvider = ({
         correo,
         password,
       });
+      console.log(data);
       dispatch({
         type: 'signUp',
         payload: {
@@ -109,6 +110,7 @@ export const AuthProvider = ({
 
       await AsyncStorage.setItem('token', data.token);
     } catch (error) {
+      console.error(error);
       dispatch({
         type: 'addError',
         payload: error.response.data.msg || 'Información incorrecta',

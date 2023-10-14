@@ -5,7 +5,10 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {AuthContext} from '../context/authContext/authContext';
 import {ChatContext} from '../context/chatContext/chatContext';
-import {marginGlobalHorizontal} from '../theme/GlobalTheme';
+import {
+  marginGlobalHorizontal,
+  marginGlobalVertical,
+} from '../theme/GlobalTheme';
 import {socket} from '../utils/sockets';
 import {Loading} from './Loading';
 import {ThemeContext} from '../context/themeContext/themeContext';
@@ -31,7 +34,7 @@ export const Chats = () => {
     addUserAndReceiveAllUser();
   }, []);
 
-  if (userChats.length === 0) {
+  if (!userChats) {
     return <Loading />;
   }
 
@@ -39,7 +42,22 @@ export const Chats = () => {
     <View style={styles.container}>
       <FlatList
         data={userChats}
-        ListHeaderComponent={<HeaderBar />}
+        ListHeaderComponent={
+          <>
+            <HeaderBar />
+            {userChats.length === 0 && (
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 22,
+                  textAlign: 'center',
+                  ...marginGlobalVertical,
+                }}>
+                🧐¡Sin Chats!
+              </Text>
+            )}
+          </>
+        }
         keyExtractor={({_id}) => _id}
         renderItem={({item}) => (
           <TouchableOpacity
@@ -55,7 +73,7 @@ export const Chats = () => {
                 color: colors.text,
                 fontSize: 18,
               }}>
-              {item._id}
+              {item.members[1].toString()}
             </Text>
           </TouchableOpacity>
         )}

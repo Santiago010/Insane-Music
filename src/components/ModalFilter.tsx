@@ -57,7 +57,7 @@ export const ModalFilter = ({
               backgroundColor: colors.card,
               ...marginGlobalVertical,
             }}>
-            <Text style={{fontSize: 18, color: colors.text}}>
+            <Text style={{fontSize: 22, color: colors.text}}>
               Escoje una categoria :
             </Text>
             {categories ? (
@@ -82,7 +82,7 @@ export const ModalFilter = ({
               backgroundColor: colors.card,
               ...marginGlobalVertical,
             }}>
-            <Text style={{fontSize: 18, color: colors.text}}>
+            <Text style={{fontSize: 22, color: colors.text}}>
               Escoje un genero:
             </Text>
             {generos ? (
@@ -109,6 +109,8 @@ export const ModalFilter = ({
             onPress={() => filtrar()}>
             <Text
               style={{
+                width: 130,
+                textAlign: 'center',
                 color: colors.background,
                 backgroundColor: colors.text,
                 paddingHorizontal: 8,
@@ -127,12 +129,14 @@ export const ModalFilter = ({
             onPress={() => hideModal()}>
             <Text
               style={{
+                width: 130,
+                textAlign: 'center',
                 color: colors.text,
                 backgroundColor: colors.background,
                 paddingHorizontal: 8,
                 paddingVertical: 5,
                 fontSize: 22,
-                borderRadius: 6,
+                borderRadius: 11,
                 textTransform: 'uppercase',
               }}>
               Cancelar

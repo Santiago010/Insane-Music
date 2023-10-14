@@ -113,7 +113,7 @@ const SearchProduct = () => {
   }, [categoria]);
 
   useEffect(() => {
-    if (generos) {
+    if (generos?.length > 0) {
       onChange(generos[0]._id, 'genero');
     }
   }, [generos]);
@@ -133,6 +133,7 @@ const SearchProduct = () => {
               }}>
               <TextInput
                 style={{
+                  paddingLeft: 6,
                   ...styles.inputs,
                   color: colors.text,
                 }}
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
   inputs: {
     width: '80%',
     opacity: 0.3,
-    fontSize: 18,
+    fontSize: 16,
     paddingVertical: 13,
     ...borderRadiusGlobal,
     ...marginGlobalVertical,

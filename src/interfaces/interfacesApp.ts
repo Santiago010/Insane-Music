@@ -10,7 +10,7 @@ export interface Usuario {
   nombre: string;
   correo: string;
   uid: string;
-  img: string;
+  imgs: string;
 }
 
 export interface SignUpData {
@@ -56,8 +56,16 @@ export interface MessageChat {
   __v: number;
 }
 
+export interface UserChat2 {
+  members: Usuario[];
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 export interface UserChat {
-  members: string[];
+  members: Number[];
   _id: string;
   createdAt: string;
   updatedAt: string;

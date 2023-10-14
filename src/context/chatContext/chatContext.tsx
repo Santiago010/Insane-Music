@@ -1,9 +1,14 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {DB} from '../../db/db';
-import {MessageChat, UserChat} from '../../interfaces/interfacesApp';
+import {
+  MessageChat,
+  UserChat,
+  UserChat2,
+  Usuario,
+} from '../../interfaces/interfacesApp';
 
 interface ChatContextProps {
-  userChats: UserChat[];
+  userChats: UserChat[] | null;
   loadChatsUser: (uid: string | undefined) => void;
   loadChat: (member1: string, member2: string) => Promise<UserChat | undefined>;
   loadMessages: (_id: string | undefined) => Promise<MessageChat[] | undefined>;
@@ -16,6 +21,10 @@ interface ChatContextProps {
     senderId: string | undefined,
     receiverId: string | undefined,
   ) => Promise<UserChat | undefined>;
+  createChat2: (
+    usuarioSender: Usuario | null,
+    usuarioReceiver: Usuario | null,
+  ) => Promise<MessageChat | undefined>;
 }
 
 export const ChatContext = createContext({} as ChatContextProps);
@@ -25,11 +34,12 @@ export const ChatProviver = ({
 }: {
   children: JSX.Element | JSX.Element[];
 }) => {
-  const [userChats, setUserChats] = useState<UserChat[]>([]);
+  const [userChats, setUserChats] = useState<UserChat[] | null>();
 
   const loadChatsUser = async (uid: string | undefined) => {
     try {
       const {data} = await DB.get<UserChat[]>(`/chats/${uid}`);
+      console.log(data);
       setUserChats(data);
     } catch (error) {
       console.error(error);

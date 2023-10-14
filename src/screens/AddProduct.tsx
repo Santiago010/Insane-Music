@@ -274,7 +274,8 @@ export const AddProduct = () => {
   }, [categoria]);
 
   useEffect(() => {
-    if (generos) {
+    console.log(generos);
+    if (generos?.length > 0) {
       onChange(generos[0]._id, 'genero');
     }
   }, [generos]);
@@ -310,7 +311,7 @@ export const AddProduct = () => {
             <Icon
               name="person-circle"
               style={{
-                ...marginGlobalHorizontal,
+                marginHorizontal: 8,
                 ...marginGlobalVertical,
               }}
               size={44}
@@ -320,7 +321,8 @@ export const AddProduct = () => {
             style={{
               ...styles.textNameProfile,
               color: colors.text,
-              ...marginGlobalVertical,
+              paddingVertical: 20,
+              letterSpacing: -1,
             }}>
             ¡Nueva Publicación!
           </Text>
@@ -357,7 +359,7 @@ export const AddProduct = () => {
               backgroundColor: colors.card,
               ...marginGlobalVertical,
             }}>
-            <Text style={{fontSize: 18, color: colors.text}}>
+            <Text style={{fontSize: 16, color: colors.text}}>
               Escoje una categoria:
             </Text>
             {categories ? (
@@ -382,7 +384,7 @@ export const AddProduct = () => {
               backgroundColor: colors.card,
               ...marginGlobalVertical,
             }}>
-            <Text style={{fontSize: 18, color: colors.text}}>
+            <Text style={{fontSize: 16, color: colors.text}}>
               Escoje un genero:
             </Text>
             {generos ? (
@@ -455,11 +457,12 @@ export const AddProduct = () => {
 const styles = StyleSheet.create({
   inputs: {
     opacity: 0.3,
-    fontSize: 20,
+    fontSize: 16,
     paddingVertical: 13,
     ...borderRadiusGlobal,
     ...marginGlobalVertical,
     paddingHorizontal: 5,
+    fontStyle: 'italic',
   },
   containerInfoProfile: {
     flexDirection: 'row',

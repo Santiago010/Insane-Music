@@ -31,6 +31,7 @@ interface Props {
 export const Card = ({product, typeBtn}: Props) => {
   const {opacity, fadeIn, fadeOut} = useAnimation();
   const {user} = useContext(AuthContext);
+
   const {
     theme: {colors},
   } = useContext(ThemeContext);
@@ -44,155 +45,152 @@ export const Card = ({product, typeBtn}: Props) => {
   };
 
   useEffect(() => {
-    fadeIn(1111);
+    fadeIn(700);
     return () => fadeOut();
   }, []);
 
-  return (
-    <Animated.View style={{opacity: opacity}}>
-      <LinearGradient
-        style={{
-          ...borderRadiusGlobal,
-        }}
-        colors={[colors.card, colors.background]}
-        start={{x: 0.1, y: 0.1}}
-        end={{x: 0.6, y: 0.9}}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Profile');
-          }}
-          activeOpacity={0.5}
+  if (product.usuario !== null) {
+    return (
+      <Animated.View style={{opacity: opacity}}>
+        <LinearGradient
           style={{
-            backgroundColor: colors.primary,
-            ...shadowGlobal,
-            ...styles.btnGoProfile,
-            marginBottom: 22,
-          }}>
-          {product.usuario.img ? (
-            <Image
-              source={{uri: product.usuario.img}}
-              style={{
-                width: 50,
-                ...borderRadiusGlobal,
-                height: 50,
-                ...marginGlobalHorizontal,
-                ...marginGlobalVertical,
-              }}
-            />
-          ) : (
-            <Icon
-              name="person-circle"
-              style={{
-                ...marginGlobalHorizontal,
-                ...marginGlobalVertical,
-              }}
-              size={44}
-            />
-          )}
-          {user?.nombre === product.usuario.nombre ? (
-            <Text
-              style={{
-                ...styles.textBtnGoProfile,
-                color: colors.text,
-                ...marginGlobalVertical,
-              }}>
-              ✌Yo✌
-            </Text>
-          ) : (
-            <Text
-              style={{
-                ...styles.textBtnGoProfile,
-                color: colors.text,
-                ...marginGlobalVertical,
-              }}>
-              {product.usuario.nombre}
-            </Text>
-          )}
-
-          <View style={styles.containerIconBtnGoProfile}>
-            <Icon name="chevron-forward" size={30} />
-          </View>
-        </TouchableOpacity>
-
-        <CarouselImages images={product.imgs} />
-        <View style={{...marginGlobalHorizontal}}>
-          <Text style={{color: colors.text, ...styles.titleProduct}}>
-            {product.nombre}
-          </Text>
-          <Text style={{color: colors.text, ...styles.description}}>
-            {product.descripcion}
-          </Text>
-          <View
+            ...borderRadiusGlobal,
+          }}
+          colors={[colors.card, colors.background]}
+          start={{x: 0.1, y: 0.1}}
+          end={{x: 0.6, y: 0.9}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Profile');
+            }}
+            activeOpacity={0.5}
             style={{
-              ...styles.containerInfoProduct,
-              ...marginGlobalVertical,
+              backgroundColor: colors.primary,
+              ...shadowGlobal,
+              ...styles.btnGoProfile,
+              marginBottom: 22,
             }}>
-            <Text
-              style={{
-                color: colors.text,
-                ...styles.textCategorie,
-              }}>
-              Categoria: {product.categoria.nombre}
-              {`\nGenero: ${product.genero.nombre}`}
-            </Text>
-            {product.cambio ? (
+            {product.usuario.imgs.length > 0 ? (
+              <Image
+                source={{uri: product.usuario.imgs[0]}}
+                style={{
+                  width: 50,
+                  ...borderRadiusGlobal,
+                  height: 50,
+                  marginHorizontal: 8,
+                  ...marginGlobalVertical,
+                }}
+              />
+            ) : (
+              <Icon
+                name="person-circle"
+                style={{
+                  marginHorizontal: 8,
+                  ...marginGlobalVertical,
+                }}
+                size={44}
+              />
+            )}
+            {user?.nombre === product.usuario.nombre ? (
               <Text
                 style={{
+                  ...styles.textBtnGoProfile,
                   color: colors.text,
-                  ...styles.textCategorie,
+                  ...marginGlobalVertical,
                 }}>
-                Intercambio
+                ✌Yo✌
               </Text>
             ) : (
               <Text
                 style={{
+                  ...styles.textBtnGoProfile,
+                  color: colors.text,
+                  ...marginGlobalVertical,
+                }}>
+                {product.usuario.nombre}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <CarouselImages images={product.imgs} />
+          <View style={{...marginGlobalHorizontal}}>
+            <Text style={{color: colors.text, ...styles.titleProduct}}>
+              {product.nombre}
+            </Text>
+            <Text style={{color: colors.text, ...styles.description}}>
+              {product.descripcion}
+            </Text>
+            <View
+              style={{
+                ...marginGlobalVertical,
+              }}>
+              <Text
+                style={{
                   color: colors.text,
                   ...styles.textCategorie,
                 }}>
-                ${product.precio}
+                Categoria: {product.categoria.nombre}
+                {`\nGenero: ${product.genero.nombre}`}
               </Text>
+              {product.cambio ? (
+                <Text
+                  style={{
+                    color: colors.text,
+                    ...styles.textCategorie,
+                  }}>
+                  Intercambio
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    color: colors.text,
+                    ...styles.textCategorie,
+                  }}>
+                  ${product.precio}
+                </Text>
+              )}
+            </View>
+            {typeBtn === 'Ver' ? (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={{
+                  backgroundColor: colors.primary,
+                  ...shadowGlobal,
+                  ...borderRadiusGlobal,
+                  ...marginGlobalVertical,
+                  ...styles.btnAction,
+                }}
+                onPress={() =>
+                  navigation.navigate('Details', {
+                    name: product.nombre,
+                    _id: product._id,
+                  })
+                }>
+                <Text style={{color: colors.text, ...styles.textBtnActions}}>
+                  {typeBtn}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={{
+                  backgroundColor: colors.primary,
+                  ...shadowGlobal,
+                  ...borderRadiusGlobal,
+                  ...marginGlobalVertical,
+                  ...styles.btnAction,
+                }}
+                onPress={() => createChatForSendMessage()}>
+                <Text style={{color: colors.text, ...styles.textBtnActions}}>
+                  {typeBtn}
+                </Text>
+              </TouchableOpacity>
             )}
           </View>
-          {typeBtn === 'Ver' ? (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={{
-                backgroundColor: colors.primary,
-                ...shadowGlobal,
-                ...borderRadiusGlobal,
-                ...marginGlobalVertical,
-                ...styles.btnAction,
-              }}
-              onPress={() =>
-                navigation.navigate('Details', {
-                  name: product.nombre,
-                  _id: product._id,
-                })
-              }>
-              <Text style={{color: colors.text, ...styles.textBtnActions}}>
-                {typeBtn}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={{
-                backgroundColor: colors.primary,
-                ...shadowGlobal,
-                ...borderRadiusGlobal,
-                ...marginGlobalVertical,
-                ...styles.btnAction,
-              }}
-              onPress={() => createChatForSendMessage()}>
-              <Text style={{color: colors.text, ...styles.textBtnActions}}>
-                {typeBtn}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </LinearGradient>
-    </Animated.View>
-  );
+        </LinearGradient>
+      </Animated.View>
+    );
+  }
 };
 const styles = StyleSheet.create({
   btnGoProfile: {
@@ -213,15 +211,12 @@ const styles = StyleSheet.create({
   },
   titleProduct: {
     fontWeight: 'bold',
-    fontSize: 22,
-  },
-  description: {
     fontSize: 18,
     textAlign: 'center',
   },
-  containerInfoProduct: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  description: {
+    fontSize: 14,
+    textAlign: 'center',
   },
   textCategorie: {
     fontSize: 18,
